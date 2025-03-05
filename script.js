@@ -29,21 +29,7 @@ const allFighters = [
 
 let userRole = "";
 
-// Funkce pro resetování stavu hry ve Firestore
-async function resetGame() {
-    const docRef = doc(db, "game", "state");
-    await setDoc(docRef, { user1: false, user2: false }, { merge: true });
-
-    // Odstranění údajů o losovaných zápasnících a zápasech
-    await setDoc(doc(db, "game", "user1"), { fighters: [] });
-    await setDoc(doc(db, "game", "user2"), { fighters: [] });
-    await setDoc(doc(db, "game", "matchups"), { matches: [] });
-
-    // Informování uživatelů
-    alert("Hra byla resetována! Začněte znovu.");
-}
-
-// Přidělení role uživatele (user1 nebo user2)
+// Funkce na přiřazení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
     const docSnap = await getDoc(docRef);
@@ -65,7 +51,7 @@ async function assignUserRole() {
     }
 }
 
-// Funkce na losování bojovníků
+// Funkce pro losování zápasníků
 async function drawFighters() {
     let selectedFighters = [];
     let availableFighters = [...allFighters];
@@ -76,7 +62,9 @@ async function drawFighters() {
         availableFighters.splice(randomIndex, 1);
     }
 
-    await setDoc(doc(db, "game", userRole), { fighters: selectedFighters });
+    // Zápis vybraných bojovníků pro daného uživatele
+    const userDocRef = doc(db, "game", userRole);
+    await setDoc(userDocRef, { fighters: selectedFighters });
 }
 
 // Losování zápasů mezi user1 a user2
@@ -109,10 +97,22 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
+// Funkce pro resetování hry
+async function resetGame() {
+    await setDoc(doc(db, "game", "user1"), { fighters: [] });
+    await setDoc(doc(db, "game", "user2"), { fighters: [] });
+    await setDoc(doc(db, "game", "matchups"), { matches: [] });
+
+    const docRef = doc(db, "game", "state");
+    await setDoc(docRef, { user1: false, user2: false }, { merge: true });
+
+    alert("Hra byla resetována! Začněte znovu.");
+}
+
 // Přidání posluchačů na tlačítka
-window.onload = async () => {
-    await assignUserRole();
-    document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
-    document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
-    document.getElementById('resetGameBtn').addEventListener('click', resetGame);
-};
+document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+document.getElementById('resetGameBtn').addEventListener('click', resetGame);
+
+// Zavolání při přiřazení role uživatele
+assignUserRole();

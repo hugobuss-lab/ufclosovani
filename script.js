@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -29,88 +29,39 @@ const allFighters = [
 
 let userRole = "";
 
-// Funkce na resetování všech dat ve Firestore
-async function resetAllData() {
-    const docRef1 = doc(db, "game", "user1");
-    const docRef2 = doc(db, "game", "user2");
-    const docRef3 = doc(db, "game", "matchups");
-
-    // Vymažeme všechna data
-    await deleteDoc(docRef1);
-    await deleteDoc(docRef2);
-    await deleteDoc(docRef3);
-
-    console.log("All previous data has been reset.");
-}
-
-// Funkce na přidělení role uživatele (user1 nebo user2)
+// Přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
     const docSnap = await getDoc(docRef);
 
-    if (!docSnap.exists()) {
-        // Přiřazení user1 jako první hráč
-        await setDoc(docRef, { user1: true });
-        userRole = "user1";
-        console.log("User1 role assigned.");
-    } else {
+    if (docSnap.exists()) {
         const data = docSnap.data();
         if (!data.user1) {
-            // Přiřazení user1, pokud ještě není
             await setDoc(docRef, { user1: true }, { merge: true });
             userRole = "user1";
-            console.log("User1 role assigned.");
         } else if (!data.user2) {
-            // Přiřazení user2, pokud ještě není
             await setDoc(docRef, { user2: true }, { merge: true });
             userRole = "user2";
-            console.log("User2 role assigned.");
         } else {
             alert("Hra je již obsazena!");
-            console.log("Both users are already assigned.");
         }
-    }
-
-    // Aktivace tlačítka pro daného uživatele
-    if (userRole === "user1") {
-        document.getElementById('drawFighterBtn1').disabled = false;
-    } else if (userRole === "user2") {
-        document.getElementById('drawFighterBtn2').disabled = false;
+    } else {
+        await setDoc(docRef, { user1: true });
+        userRole = "user1";
     }
 }
 
 // Funkce na losování bojovníků
-async function drawFighters(userRole) {
+async function drawFighters() {
     let selectedFighters = [];
-    let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
+    let availableFighters = [...allFighters];
 
-    // Pokud uživatel má roli user1, vyfiltrujeme již vylosované zápasníky pro user2
-    if (userRole === "user1") {
-        const docUser2 = await getDoc(doc(db, "game", "user2"));
-        if (docUser2.exists()) {
-            const user2Fighters = docUser2.data().fighters;
-            availableFighters = availableFighters.filter(fighter => !user2Fighters.includes(fighter));
-        }
-    } else if (userRole === "user2") {
-        const docUser1 = await getDoc(doc(db, "game", "user1"));
-        if (docUser1.exists()) {
-            const user1Fighters = docUser1.data().fighters;
-            availableFighters = availableFighters.filter(fighter => !user1Fighters.includes(fighter));
-        }
-    }
-
-    // Losujeme 8 unikátních bojovníků pro daného uživatele
-    while (selectedFighters.length < 8) {
+    for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
-        const fighter = availableFighters[randomIndex];
-
-        if (!selectedFighters.includes(fighter)) {  // Kontrola, že tento zápasník ještě nebyl vylosován
-            selectedFighters.push(fighter);
-            availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
-        }
+        selectedFighters.push(availableFighters[randomIndex]);
+        availableFighters.splice(randomIndex, 1);
     }
 
-    // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
     await setDoc(doc(db, "game", userRole), { fighters: selectedFighters });
 }
 
@@ -144,10 +95,31 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-// Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn1').addEventListener('click', () => drawFighters("user1"));
-document.getElementById('drawFighterBtn2').addEventListener('click', () => drawFighters("user2"));
-document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+// Funkce pro přidání posluchačů na tlačítka
+document.addEventListener('DOMContentLoaded', () => {
+    const drawFighterBtn1 = document.getElementById('drawFighterBtn1');
+    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
+    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
 
-// Inicializace role pro uživatele
-assignUserRole();
+    // Přidání posluchačů pro tlačítka
+    if (drawFighterBtn1) {
+        drawFighterBtn1.addEventListener('click', () => {
+            drawFighters();  // Losování pro uživatele 1
+        });
+    }
+
+    if (drawFighterBtn2) {
+        drawFighterBtn2.addEventListener('click', () => {
+            drawFighters();  // Losování pro uživatele 2
+        });
+    }
+
+    if (drawMatchupBtn) {
+        drawMatchupBtn.addEventListener('click', () => {
+            drawMatchups();  // Losování zápasů
+        });
+    }
+
+    // Spuštění při inicializaci
+    assignUserRole();
+});

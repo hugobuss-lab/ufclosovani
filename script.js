@@ -1,4 +1,4 @@
-// Import Firebase SDK
+// Import Firebase moduly
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
@@ -29,7 +29,7 @@ const allFighters = [
 
 let userRole = "";
 
-// Přidělení role uživatele (user1 nebo user2)
+// Funkce pro přiřazení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
     const docSnap = await getDoc(docRef);
@@ -51,24 +51,24 @@ async function assignUserRole() {
     }
 }
 
-// Funkce na losování bojovníků pro každého uživatele
+// Funkce pro losování bojovníků
 async function drawFighters() {
     let selectedFighters = [];
-    let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
+    let availableFighters = [...allFighters]; // Kopie seznamu bojovníků
 
-    // Losujeme 8 bojovníků
+    // Losování 8 bojovníků
     for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
         selectedFighters.push(availableFighters[randomIndex]);
-        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
+        availableFighters.splice(randomIndex, 1); // Odstranit vylosovaného bojovníka
     }
 
-    // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
-    const docRef = doc(db, "game", userRole); // Opraveno na "game/user1" nebo "game/user2"
+    // Uložení vylosovaných bojovníků do Firestore
+    const docRef = doc(db, "game", userRole); 
     await setDoc(docRef, { fighters: selectedFighters });
 }
 
-// Losování zápasů mezi user1 a user2
+// Funkce pro losování zápasů
 async function drawMatchups() {
     const docUser1 = await getDoc(doc(db, "game", "user1"));
     const docUser2 = await getDoc(doc(db, "game", "user2"));
@@ -79,7 +79,7 @@ async function drawMatchups() {
     }
 }
 
-// Posluchače na aktualizaci dat v reálném čase
+// Posluchače pro aktualizaci UI v reálném čase
 onSnapshot(doc(db, "game", "user1"), (doc) => {
     if (doc.exists()) {
         document.getElementById('fighters1').innerText = doc.data().fighters.join(', ');
@@ -98,40 +98,17 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-// Funkce pro resetování dat
-async function resetGame() {
-    const docRef = doc(db, "game", "state");
-    await setDoc(docRef, { user1: false, user2: false }, { merge: true });
-    location.reload(); // Obnoví stránku
-}
-
-// Ujistíme se, že DOM je načtený, než přidáme event listener
+// Přidání posluchačů na tlačítka
 document.addEventListener("DOMContentLoaded", () => {
-    // Přidání posluchačů na tlačítka až po načtení stránky
-    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
-    if (drawFighterBtn2) {
-        drawFighterBtn2.addEventListener('click', async () => {
-            userRole = "user2";  // Pro uživatele 2
-            await drawFighters();
-        });
-    }
+    document.getElementById('drawFighterBtn').addEventListener('click', async () => {
+        userRole = "user1";
+        await drawFighters();
+    });
 
-    const drawFighterBtn = document.getElementById('drawFighterBtn');
-    if (drawFighterBtn) {
-        drawFighterBtn.addEventListener('click', async () => {
-            userRole = "user1";  // Pro uživatele 1
-            await drawFighters();
-        });
-    }
+    document.getElementById('drawFighterBtn2').addEventListener('click', async () => {
+        userRole = "user2";
+        await drawFighters();
+    });
 
-    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
-    if (drawMatchupBtn) {
-        drawMatchupBtn.addEventListener('click', drawMatchups);
-    }
-
-    // Tlačítko pro resetování
-    const resetGameBtn = document.getElementById('resetGameBtn');
-    if (resetGameBtn) {
-        resetGameBtn.addEventListener('click', resetGame); // Zavolá resetování
-    }
+    document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
 });

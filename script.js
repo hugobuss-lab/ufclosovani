@@ -110,11 +110,9 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 });
 
 // Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
-document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
-document.getElementById('resetGameBtn').addEventListener('click', resetGame);
-
-// Při načítání stránky přidělit roli uživatele
 window.onload = async () => {
     await assignUserRole();
+    document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+    document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+    document.getElementById('resetGameBtn').addEventListener('click', resetGame);
 };

@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -51,8 +51,16 @@ async function assignUserRole() {
     }
 }
 
+// Funkce na resetování dat (smazání předchozích vylosovaných bojovníků)
+async function resetPreviousFighters() {
+    const docRef = doc(db, "game", userRole);
+    await deleteDoc(docRef); // Smažeme staré zápasníky pro aktuálního uživatele
+}
+
 // Funkce na losování bojovníků
 async function drawFighters() {
+    await resetPreviousFighters(); // Resetujeme předchozí vylosované zápasníky
+
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
 

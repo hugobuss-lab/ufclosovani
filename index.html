@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Losování zápasníků UFC 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Losování zápasníků UFC 4</h1>
+    <button onclick="drawFighter()">Losuj zápasníka</button>
+    <div id="result"></div>
+
+    <script>
+        // Seznam zápasníků podle tvého výběru
+        const fighters = [
+            "🇳🇬Israel Adesanya", "🇷🇺Omari Akhmedov", "🏴Michael Bisping", "🇺🇸Derek Brunson",
+            "🇺🇸Jared Canonnier", "🇷🇺Khamzat Chimaev", "🇧🇷Paulo Costa", "🇺🇸Nick Diaz",
+            "🇿🇦Dricus Du Plessis", "🇺🇸Kelvin Gastelum", "🇯🇲Uriah Hall", "🇳🇴Jack Hermansson",
+            "🇺🇸Kevin Holland", "🇵🇱Krzysztof Jotko", "🇧🇷Lyoto Machida", "🇧🇷Demian Maia",
+            "🇺🇸Bo Nickal", "🇧🇷Alex Pereira", "🇺🇸Luke Rockhold", "🇨🇺Yoel Romero", "🇧🇷Thiago Santos",
+            "🇧🇷Anderson Silva", "🇺🇸Anthony Smith", "🇨🇦G. St-Pierre", "🇺🇸Sean Strickland",
+            "🏴Darren Till", "🇮🇹Marvin Vettori", "🇦🇺Robert Whittaker"
+        ];
+
+        // Funkce pro losování jednoho zápasníka
+        function drawFighter() {
+            // Náhodný index pro výběr zápasníka
+            const randomIndex = Math.floor(Math.random() * fighters.length);
+
+            // Výběr zápasníka z pole
+            const selectedFighter = fighters[randomIndex];
+
+            // Zobrazení výsledku
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = `Vylosovaný zápasník: <br><strong>${selectedFighter}</strong>`;
+        }
+    </script>
+</body>
+</html>

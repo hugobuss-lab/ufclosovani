@@ -56,12 +56,14 @@ async function drawFighters() {
     let selectedFighters = [];
     let availableFighters = [...allFighters];
 
+    // Losujeme 8 bojovníků
     for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
         selectedFighters.push(availableFighters[randomIndex]);
         availableFighters.splice(randomIndex, 1);
     }
 
+    // Ukládáme vylosované bojovníky do Firestore pro uživatele
     await setDoc(doc(db, "game", userRole), { fighters: selectedFighters });
 }
 
@@ -96,5 +98,15 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 });
 
 // Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtn').addEventListener('click', async () => {
+    userRole = "user1";  // Pro uživatele 1
+    await drawFighters();
+});
+
+document.getElementById('drawFighterBtn2').addEventListener('click', async () => {
+    userRole = "user2";  // Pro uživatele 2
+    await drawFighters();
+});
+
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+

@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -63,8 +63,9 @@ async function drawFighters() {
         availableFighters.splice(randomIndex, 1);
     }
 
-    // Ukládáme vylosované bojovníky do Firestore pro uživatele
-    await setDoc(doc(db, "game", userRole), { fighters: selectedFighters });
+    // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
+    const docRef = doc(db, "game", userRole); // Opraveno na "game/user1" nebo "game/user2"
+    await setDoc(docRef, { fighters: selectedFighters });
 }
 
 // Losování zápasů mezi user1 a user2
@@ -109,4 +110,3 @@ document.getElementById('drawFighterBtn2').addEventListener('click', async () =>
 });
 
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
-

@@ -147,3 +147,8 @@ document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups
 
 // Inicializace role pro uživatele
 assignUserRole();
+
+// Resetování dat při načtení stránky
+window.addEventListener('beforeunload', () => {
+    resetAllData();
+});

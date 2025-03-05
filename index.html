@@ -56,39 +56,31 @@
     <script>
         // Seznam bojovníků (můžeš přidat více bojovníků)
         const allFighters = [
-            'Khabib Nurmagomedov',
-            'Conor McGregor',
-            'Jon Jones',
-            'Israel Adesanya',
-            'Stipe Miocic',
-            'Amanda Nunes',
-            'Daniel Cormier',
-            'Francis Ngannou',
-            'Max Holloway',
-            'Charles Oliveira',
-            'Tony Ferguson',
-            'Justin Gaethje',
-            'Robert Whittaker',
-            'Dustin Poirier',
-            'Alexander Volkanovski',
-            'Jan Blachowicz'
+            'Omari Akhmedov', 'Michael Bisping', 'Derek Brunson', 'Jared Canonnier', 
+            'Khamzat Chimaev', 'Paulo Costa', 'Nick Diaz', 'Dricus Du Plessis', 
+            'Kelvin Gastelum', 'Uriah Hall', 'Jack Hermansson', 'Kevin Holland', 
+            'Krzysztof Jotko', 'Lyoto Machida', 'Demian Maia', 'Bo Nickal', 
+            'Alex Pereira', 'Luke Rockhold', 'Yoel Romero', 'Thiago Santos', 
+            'Anderson Silva', 'Anthony Smith', 'G. St-Pierre', 'Sean Strickland', 
+            'Darren Till', 'Marvin Vettori', 'Robert Whittaker'
         ];
 
         // Seznam pro uchovávání vylosovaných bojovníků
         let user1Fighters = [];
         let user2Fighters = [];
+        let remainingFighters = [...allFighters]; // Udržíme seznam pro společné losování
 
         // Funkce pro losování 8 zápasníků pro uživatele
         function drawFighters(user) {
-            let remainingFighters = [...allFighters]; // Vytvoříme kopii původního seznamu
             let selectedFighters = [];
             
+            // Vybere 8 zápasníků z dostupných
             for (let i = 0; i < 8; i++) {
                 const randomIndex = Math.floor(Math.random() * remainingFighters.length);
                 selectedFighters.push(remainingFighters[randomIndex]);
                 remainingFighters.splice(randomIndex, 1); // Odstraníme vybraného bojovníka
             }
-            
+
             if (user === 1) {
                 user1Fighters = selectedFighters;
                 document.getElementById('fighters1').innerHTML = selectedFighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');

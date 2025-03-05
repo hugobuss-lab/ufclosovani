@@ -3,54 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Losování zápasníků UFC 4</title>
+    <title>Losování UFC 4 Zápasníků a Zápasů</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            margin-top: 50px;
         }
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin-top: 20px;
             cursor: pointer;
         }
-        #result {
+        #fighters, #matchup {
             margin-top: 20px;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 20px;
+        }
+        .fighter-list {
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .fighter {
+            width: 200px;
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f5f5f5;
         }
     </style>
 </head>
 <body>
-    <h1>Losování zápasníků UFC 4</h1>
-    <button onclick="drawFighter()">Losuj zápasníka</button>
-    <div id="result"></div>
+
+    <h1>Losování UFC 4 Zápasníků a Zápasů</h1>
+
+    <!-- Uživatel 1 Losování -->
+    <h2>Uživatel 1</h2>
+    <button id="drawFighterBtn1">Losovat 8 Zápasníků</button>
+    <div id="fighters1" class="fighter-list"></div>
+
+    <!-- Uživatel 2 Losování -->
+    <h2>Uživatel 2</h2>
+    <button id="drawFighterBtn2" style="display:none;">Losovat 8 Zápasníků</button>
+    <div id="fighters2" class="fighter-list"></div>
+
+    <!-- Losování zápasů -->
+    <button id="drawMatchupBtn" style="display:none;">Losovat Zápasy</button>
+    <div id="matchup" style="display:none;"></div>
 
     <script>
-        // Seznam zápasníků podle tvého výběru
-        const fighters = [
-            "🇳🇬Israel Adesanya", "🇷🇺Omari Akhmedov", "🏴Michael Bisping", "🇺🇸Derek Brunson",
-            "🇺🇸Jared Canonnier", "🇷🇺Khamzat Chimaev", "🇧🇷Paulo Costa", "🇺🇸Nick Diaz",
-            "🇿🇦Dricus Du Plessis", "🇺🇸Kelvin Gastelum", "🇯🇲Uriah Hall", "🇳🇴Jack Hermansson",
-            "🇺🇸Kevin Holland", "🇵🇱Krzysztof Jotko", "🇧🇷Lyoto Machida", "🇧🇷Demian Maia",
-            "🇺🇸Bo Nickal", "🇧🇷Alex Pereira", "🇺🇸Luke Rockhold", "🇨🇺Yoel Romero", "🇧🇷Thiago Santos",
-            "🇧🇷Anderson Silva", "🇺🇸Anthony Smith", "🇨🇦G. St-Pierre", "🇺🇸Sean Strickland",
-            "🏴Darren Till", "🇮🇹Marvin Vettori", "🇦🇺Robert Whittaker"
+        // Seznam bojovníků (můžeš přidat více bojovníků)
+        const allFighters = [
+            'Khabib Nurmagomedov',
+            'Conor McGregor',
+            'Jon Jones',
+            'Israel Adesanya',
+            'Stipe Miocic',
+            'Amanda Nunes',
+            'Daniel Cormier',
+            'Francis Ngannou',
+            'Max Holloway',
+            'Charles Oliveira',
+            'Tony Ferguson',
+            'Justin Gaethje',
+            'Robert Whittaker',
+            'Dustin Poirier',
+            'Alexander Volkanovski',
+            'Jan Blachowicz'
         ];
 
-        // Funkce pro losování jednoho zápasníka
-        function drawFighter() {
-            // Náhodný index pro výběr zápasníka
-            const randomIndex = Math.floor(Math.random() * fighters.length);
+        // Seznam pro uchovávání vylosovaných bojovníků
+        let user1Fighters = [];
+        let user2Fighters = [];
 
-            // Výběr zápasníka z pole
-            const selectedFighter = fighters[randomIndex];
-
-            // Zobrazení výsledku
-            const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = `Vylosovaný zápasník: <br><strong>${selectedFighter}</strong>`;
+        // Funkce pro losování 8 zápasníků pro uživatele
+        function drawFighters(user) {
+            let remainingFighters = [...allFighters]; // Vytvoříme kopii původního seznamu
+            let selectedFighters = [];
+            
+            for (let i = 0; i < 8; i++) {
+                const randomIndex = Math.floor(Math.random() * remainingFighters.length);
+                selectedFighters.push(remainingFighters[randomIndex]);
+                remainingFighters.splice(randomIndex, 1); // Odstraníme vybraného bojovníka
+            }
+            
+            if (user === 1) {
+                user1Fighters = selectedFighters;
+                document.getElementById('fighters1').innerHTML = selectedFighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');
+                document.getElementById('drawFighterBtn2').style.display = 'inline-block'; // Umožní druhému uživateli losování
+            } else {
+                user2Fighters = selectedFighters;
+                document.getElementById('fighters2').innerHTML = selectedFighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');
+                document.getElementById('drawMatchupBtn').style.display = 'inline-block'; // Umožní losování zápasů
+            }
         }
+
+        // Funkce pro losování zápasů mezi 2 uživateli
+        function drawMatchups() {
+            let matchups = [];
+            for (let i = 0; i < 8; i++) {
+                matchups.push(`${user1Fighters[i]} vs. ${user2Fighters[i]}`);
+            }
+            document.getElementById('matchup').innerHTML = matchups.map(match => `<div>${match}</div>`).join('');
+        }
+
+        // Event listeners pro tlačítka
+        document.getElementById('drawFighterBtn1').addEventListener('click', function() {
+            drawFighters(1);
+        });
+
+        document.getElementById('drawFighterBtn2').addEventListener('click', function() {
+            drawFighters(2);
+        });
+
+        document.getElementById('drawMatchupBtn').addEventListener('click', function() {
+            drawMatchups();
+        });
     </script>
+
 </body>
 </html>

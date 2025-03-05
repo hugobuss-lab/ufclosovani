@@ -29,6 +29,26 @@ const allFighters = [
 
 let userRole = "";
 
+// Funkce pro resetování dat při načtení stránky
+async function resetData() {
+    const docRef = doc(db, "game", "user1");
+    const docUser1 = await getDoc(docRef);
+    const docRef2 = doc(db, "game", "user2");
+    const docUser2 = await getDoc(docRef2);
+
+    // Vymazání dat, pokud existují
+    if (docUser1.exists()) {
+        await setDoc(docRef, { fighters: [] });
+    }
+    if (docUser2.exists()) {
+        await setDoc(docRef2, { fighters: [] });
+    }
+
+    // Resetování zápasů
+    const docMatchupsRef = doc(db, "game", "matchups");
+    await setDoc(docMatchupsRef, { matches: [] });
+}
+
 // Přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
@@ -100,6 +120,9 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 
 // Ujistíme se, že DOM je načtený, než přidáme event listener
 document.addEventListener("DOMContentLoaded", () => {
+    // Resetování dat při načtení stránky
+    resetData();
+
     // Přidání posluchačů na tlačítka až po načtení stránky
     const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
     if (drawFighterBtn2) {
@@ -119,6 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const drawMatchupBtn = document.getElementById('drawMatchupBtn');
     if (drawMatchupBtn) {
-        drawMatchupBtn.addEventListener('click', drawMatchups);
+        drawMatchupBtn.addEventListener('click', async () => {
+            // Zkontrolujeme, zda oba uživatelé mají vylosované zápasníky
+            const docUser1 = await getDoc(doc(db, "game", "user1"));
+            const docUser2 = await getDoc(doc(db, "game", "user2"));
+            if (docUser1.exists() && docUser2.exists()) {
+                drawMatchups();
+            }
+        });
     }
 });

@@ -51,7 +51,7 @@ async function assignUserRole() {
     }
 }
 
-// Funkce na losování bojovníků pro každého uživatele
+// Funkce na losování bojovníků
 async function drawFighters() {
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
@@ -114,6 +114,5 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 });
 
 // Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn1').addEventListener('click', drawFighters);
-document.getElementById('drawFighterBtn2').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);

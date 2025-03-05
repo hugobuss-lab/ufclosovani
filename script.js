@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -29,12 +29,30 @@ const allFighters = [
 
 let userRole = "";
 
+// Funkce na resetování všech dat ve Firestore
+async function resetAllData() {
+    const docRef1 = doc(db, "game", "user1");
+    const docRef2 = doc(db, "game", "user2");
+    const docRef3 = doc(db, "game", "matchups");
+    
+    // Vymažeme všechna data
+    await deleteDoc(docRef1);
+    await deleteDoc(docRef2);
+    await deleteDoc(docRef3);
+
+    console.log("All previous data has been reset.");
+}
+
 // Přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
+    // Pokud ještě není žádná role, přiřadíme uživateli první volnou roli
+    if (!docSnap.exists()) {
+        await setDoc(docRef, { user1: true });
+        userRole = "user1";
+    } else {
         const data = docSnap.data();
         if (!data.user1) {
             await setDoc(docRef, { user1: true }, { merge: true });
@@ -45,21 +63,14 @@ async function assignUserRole() {
         } else {
             alert("Hra je již obsazena!");
         }
-    } else {
-        await setDoc(docRef, { user1: true });
-        userRole = "user1";
     }
-}
-
-// Funkce na resetování dat (smazání předchozích vylosovaných bojovníků)
-async function resetPreviousFighters() {
-    const docRef = doc(db, "game", userRole);
-    await deleteDoc(docRef); // Smažeme staré zápasníky pro aktuálního uživatele
 }
 
 // Funkce na losování bojovníků
 async function drawFighters() {
-    await resetPreviousFighters(); // Resetujeme předchozí vylosované zápasníky
+    // Pokud klikneme na "Losovat zápasníky", resetujeme stará data
+    const docRef = doc(db, "game", userRole);
+    await deleteDoc(docRef); // Smažeme staré zápasníky
 
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
@@ -91,8 +102,7 @@ async function drawFighters() {
     }
 
     // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
-    const docRef = doc(db, "game", userRole); // Opraveno na "game/user1" nebo "game/user2"
-    await setDoc(docRef, { fighters: selectedFighters });
+    await setDoc(doc(db, "game", userRole), { fighters: selectedFighters });
 }
 
 // Losování zápasů mezi user1 a user2

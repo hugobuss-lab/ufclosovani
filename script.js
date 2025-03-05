@@ -51,16 +51,16 @@ async function assignUserRole() {
     }
 }
 
-// Funkce na losování bojovníků
+// Funkce na losování bojovníků pro každého uživatele
 async function drawFighters() {
     let selectedFighters = [];
-    let availableFighters = [...allFighters];
+    let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
 
     // Losujeme 8 bojovníků
     for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
         selectedFighters.push(availableFighters[randomIndex]);
-        availableFighters.splice(randomIndex, 1);
+        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
     }
 
     // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele

@@ -1,33 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Losování zápasníků</title>
-    <!-- Firebase SDK -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/11.1.0/firebase-app.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/11.1.0/firebase-firestore.min.js"></script>
-
-    <!-- V tomto scriptu používáme type="module" -->
-    <script type="module" src="script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase App</title>
 </head>
 <body>
-    <h1>Losování zápasníků</h1>
+  <h1>Losování zápasníků</h1>
 
-    <button id="drawFighterBtn">Losuj zápasníky pro Uživatele 1</button>
-    <button id="drawFighterBtn2">Losuj zápasníky pro Uživatele 2</button>
-    <button id="drawMatchupBtn">Vygeneruj zápasy</button>
+  <!-- Tlačítka pro losování -->
+  <button id="drawFighterBtn">Losuj bojovníky</button>
+  <button id="drawMatchupBtn">Losuj zápasy</button>
 
-    <!-- Tlačítko pro resetování stránky -->
-    <button id="resetGameBtn">Resetovat hru</button>
+  <div id="fighters1">Bojovníci uživatele 1: </div>
+  <div id="fighters2">Bojovníci uživatele 2: </div>
+  <div id="matchup">Zápasy: </div>
 
-    <h2>Zápasníci pro Uživatele 1:</h2>
-    <div id="fighters1"></div>
+  <!-- Tlačítko pro resetování -->
+  <button id="resetBtn">Resetovat</button>
 
-    <h2>Zápasníci pro Uživatele 2:</h2>
-    <div id="fighters2"></div>
-
-    <h2>Vygenerované zápasy:</h2>
-    <pre id="matchup"></pre>
+  <!-- Odkaz na váš skript -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>

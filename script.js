@@ -1,1 +1,102 @@
+// Import Firebase SDK
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
+// Inicializace Firebase (nezapomeň přidat svou konfiguraci Firebase)
+const firebaseConfig = {
+    apiKey: "AIzaSyBchdjFEa0njLG5xpXWhPMJqq4O34gysNg",
+    authDomain: "ufclosovani.firebaseapp.com",
+    projectId: "ufclosovani",
+    storageBucket: "ufclosovani.firebasestorage.app",
+    messagingSenderId: "138751202363",
+    appId: "1:138751202363:web:71fcefa92e79a90c9fb81e",
+    measurementId: "G-Q4MZ39CYVD"
+};
+
+// Inicializace Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Seznam všech zápasníků
+const allFighters = [
+    'Omari Akhmedov', 'Michael Bisping', 'Derek Brunson', 'Jared Canonnier', 'Khamzat Chimaev',
+    'Paulo Costa', 'Nick Diaz', 'Dricus Du Plessis', 'Kelvin Gastelum', 'Uriah Hall',
+    'Jack Hermansson', 'Kevin Holland', 'Krzysztof Jotko', 'Lyoto Machida', 'Demian Maia',
+    'Bo Nickal', 'Alex Pereira', 'Luke Rockhold', 'Yoel Romero', 'Thiago Santos',
+    'Anderson Silva', 'Anthony Smith', 'G. St-Pierre', 'Sean Strickland', 'Darren Till',
+    'Marvin Vettori', 'Robert Whittaker'
+];
+
+let userRole = "";
+
+// Funkce na losování zápasníků pro uživatele
+async function drawFighters() {
+    let selectedFighters = [];
+    let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
+
+    // Losujeme 8 zápasníků
+    for (let i = 0; i < 8; i++) {
+        const randomIndex = Math.floor(Math.random() * availableFighters.length);
+        selectedFighters.push(availableFighters[randomIndex]);
+        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného zápasníka
+    }
+
+    // Ukládáme vylosované zápasníky do Firestore pro konkrétního uživatele
+    const docRef = doc(db, "game", userRole); // "game/user1" nebo "game/user2"
+    await setDoc(docRef, { fighters: selectedFighters });
+}
+
+// Losování zápasů mezi user1 a user2
+async function drawMatchups() {
+    const docUser1 = await getDoc(doc(db, "game", "user1"));
+    const docUser2 = await getDoc(doc(db, "game", "user2"));
+
+    if (docUser1.exists() && docUser2.exists()) {
+        const matchups = docUser1.data().fighters.map((fighter, index) => `${fighter} vs. ${docUser2.data().fighters[index]}`);
+        await setDoc(doc(db, "game", "matchups"), { matches: matchups });
+    }
+}
+
+// Posluchače na aktualizaci dat v reálném čase
+onSnapshot(doc(db, "game", "user1"), (doc) => {
+    if (doc.exists()) {
+        document.getElementById('fighters1').innerText = doc.data().fighters.join(', ');
+    }
+});
+
+onSnapshot(doc(db, "game", "user2"), (doc) => {
+    if (doc.exists()) {
+        document.getElementById('fighters2').innerText = doc.data().fighters.join(', ');
+    }
+});
+
+onSnapshot(doc(db, "game", "matchups"), (doc) => {
+    if (doc.exists()) {
+        document.getElementById('matchup').innerText = doc.data().matches.join('\n');
+    }
+});
+
+// Ujistíme se, že DOM je načtený, než přidáme event listener
+document.addEventListener("DOMContentLoaded", () => {
+    // Přidání posluchačů na tlačítka až po načtení stránky
+    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
+    if (drawFighterBtn2) {
+        drawFighterBtn2.addEventListener('click', async () => {
+            userRole = "user2";  // Pro uživatele 2
+            await drawFighters();
+        });
+    }
+
+    const drawFighterBtn = document.getElementById('drawFighterBtn');
+    if (drawFighterBtn) {
+        drawFighterBtn.addEventListener('click', async () => {
+            userRole = "user1";  // Pro uživatele 1
+            await drawFighters();
+        });
+    }
+
+    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
+    if (drawMatchupBtn) {
+        drawMatchupBtn.addEventListener('click', drawMatchups);
+    }
+});

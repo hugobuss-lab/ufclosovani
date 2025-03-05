@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Losování zápasníků a zápasů</title>
-    <!-- Nepotřebujeme vkládat Firebase skript ručně, bude automaticky připojený z script.js -->
+
+    <!-- Firebase SDK pro Web -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
 </head>
 <body>
     <h1>Losování zápasníků a zápasů pro UFC 4</h1>
@@ -29,6 +33,6 @@
     </div>
 
     <!-- Načítání scriptu jako modul -->
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

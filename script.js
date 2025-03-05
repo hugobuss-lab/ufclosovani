@@ -110,7 +110,8 @@ async function resetGame() {
 }
 
 // Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtnUser1').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtnUser2').addEventListener('click', drawFighters);
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
 document.getElementById('resetGameBtn').addEventListener('click', resetGame);
 

@@ -1,1 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Losování zápasníků</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script type="module" src="script.js"></script>
+</head>
+<body>
+    <h1>Losování zápasníků</h1>
 
+    <button id="drawFighterBtn">Losuj zápasníky pro Uživatele 1</button>
+    <button id="drawFighterBtn2">Losuj zápasníky pro Uživatele 2</button>
+    <button id="drawMatchupBtn">Vygeneruj zápasy</button>
+
+    <h2>Zápasníci pro Uživatele 1:</h2>
+    <div id="fighters1"></div>
+
+    <h2>Zápasníci pro Uživatele 2:</h2>
+    <div id="fighters2"></div>
+
+    <h2>Vygenerované zápasy:</h2>
+    <pre id="matchup"></pre>
+</body>
+</html>

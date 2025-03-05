@@ -72,10 +72,14 @@ async function drawFighters() {
     }
 
     // Losujeme 8 unikátních bojovníků pro daného uživatele
-    for (let i = 0; i < 8; i++) {
+    while (selectedFighters.length < 8) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
-        selectedFighters.push(availableFighters[randomIndex]);
-        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
+        const fighter = availableFighters[randomIndex];
+
+        if (!selectedFighters.includes(fighter)) {  // Kontrola, že tento zápasník ještě nebyl vylosován
+            selectedFighters.push(fighter);
+            availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
+        }
     }
 
     // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
@@ -116,3 +120,6 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 // Přidání posluchačů na tlačítka
 document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+
+// Inicializace role pro uživatele
+assignUserRole();

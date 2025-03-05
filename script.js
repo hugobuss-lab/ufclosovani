@@ -2,7 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// Inicializace Firebase (nezapomeň přidat svou konfiguraci Firebase)
+// Firebase konfigurace
 const firebaseConfig = {
     apiKey: "AIzaSyBchdjFEa0njLG5xpXWhPMJqq4O34gysNg",
     authDomain: "ufclosovani.firebaseapp.com",
@@ -17,7 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Seznam všech zápasníků
+// Seznam bojovníků
 const allFighters = [
     'Omari Akhmedov', 'Michael Bisping', 'Derek Brunson', 'Jared Canonnier', 'Khamzat Chimaev',
     'Paulo Costa', 'Nick Diaz', 'Dricus Du Plessis', 'Kelvin Gastelum', 'Uriah Hall',
@@ -29,20 +29,42 @@ const allFighters = [
 
 let userRole = "";
 
-// Funkce na losování zápasníků pro uživatele
+// Přidělení role uživatele (user1 nebo user2)
+async function assignUserRole() {
+    const docRef = doc(db, "game", "state");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (!data.user1) {
+            await setDoc(docRef, { user1: true }, { merge: true });
+            userRole = "user1";
+        } else if (!data.user2) {
+            await setDoc(docRef, { user2: true }, { merge: true });
+            userRole = "user2";
+        } else {
+            alert("Hra je již obsazena!");
+        }
+    } else {
+        await setDoc(docRef, { user1: true });
+        userRole = "user1";
+    }
+}
+
+// Funkce na losování bojovníků pro každého uživatele
 async function drawFighters() {
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
 
-    // Losujeme 8 zápasníků
+    // Losujeme 8 bojovníků
     for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
         selectedFighters.push(availableFighters[randomIndex]);
-        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného zápasníka
+        availableFighters.splice(randomIndex, 1); // Odstraníme vylosovaného bojovníka
     }
 
-    // Ukládáme vylosované zápasníky do Firestore pro konkrétního uživatele
-    const docRef = doc(db, "game", userRole); // "game/user1" nebo "game/user2"
+    // Ukládáme vylosované bojovníky do Firestore pro konkrétního uživatele
+    const docRef = doc(db, "game", userRole); // Opraveno na "game/user1" nebo "game/user2"
     await setDoc(docRef, { fighters: selectedFighters });
 }
 
@@ -76,6 +98,13 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
+// Funkce pro resetování dat
+async function resetGame() {
+    const docRef = doc(db, "game", "state");
+    await setDoc(docRef, { user1: false, user2: false }, { merge: true });
+    location.reload(); // Obnoví stránku
+}
+
 // Ujistíme se, že DOM je načtený, než přidáme event listener
 document.addEventListener("DOMContentLoaded", () => {
     // Přidání posluchačů na tlačítka až po načtení stránky
@@ -98,5 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const drawMatchupBtn = document.getElementById('drawMatchupBtn');
     if (drawMatchupBtn) {
         drawMatchupBtn.addEventListener('click', drawMatchups);
+    }
+
+    // Tlačítko pro resetování
+    const resetGameBtn = document.getElementById('resetGameBtn');
+    if (resetGameBtn) {
+        resetGameBtn.addEventListener('click', resetGame); // Zavolá resetování
     }
 });

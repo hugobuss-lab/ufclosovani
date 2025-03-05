@@ -29,6 +29,20 @@ const allFighters = [
 
 let userRole = "";
 
+// Funkce pro resetování stavu hry ve Firestore
+async function resetGame() {
+    const docRef = doc(db, "game", "state");
+    await setDoc(docRef, { user1: false, user2: false }, { merge: true });
+
+    // Odstranění údajů o losovaných zápasnících a zápasech
+    await setDoc(doc(db, "game", "user1"), { fighters: [] });
+    await setDoc(doc(db, "game", "user2"), { fighters: [] });
+    await setDoc(doc(db, "game", "matchups"), { matches: [] });
+
+    // Informování uživatelů
+    alert("Hra byla resetována! Začněte znovu.");
+}
+
 // Přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
@@ -95,31 +109,12 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-// Funkce pro přidání posluchačů na tlačítka
-document.addEventListener('DOMContentLoaded', () => {
-    const drawFighterBtn1 = document.getElementById('drawFighterBtn1');
-    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
-    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
+// Přidání posluchačů na tlačítka
+document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+document.getElementById('resetGameBtn').addEventListener('click', resetGame);
 
-    // Přidání posluchačů pro tlačítka
-    if (drawFighterBtn1) {
-        drawFighterBtn1.addEventListener('click', () => {
-            drawFighters();  // Losování pro uživatele 1
-        });
-    }
-
-    if (drawFighterBtn2) {
-        drawFighterBtn2.addEventListener('click', () => {
-            drawFighters();  // Losování pro uživatele 2
-        });
-    }
-
-    if (drawMatchupBtn) {
-        drawMatchupBtn.addEventListener('click', () => {
-            drawMatchups();  // Losování zápasů
-        });
-    }
-
-    // Spuštění při inicializaci
-    assignUserRole();
-});
+// Při načítání stránky přidělit roli uživatele
+window.onload = async () => {
+    await assignUserRole();
+};

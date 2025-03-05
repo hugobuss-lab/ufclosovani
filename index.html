@@ -3,40 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Losování UFC 4 Zápasníků a Zápasů</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        .fighters-container, .matchup-container {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Losování zápasníků</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <h1>Losování UFC 4 Zápasníků a Zápasů</h1>
+    <h1>Losování zápasníků a zápasů</h1>
 
-    <h2>Uživatel 1</h2>
-    <button id="drawFighterBtnUser1">Losovat 8 Zápasníků pro Uživatele 1</button>
-    <div id="fighters1" class="fighters-container"></div>
+    <!-- Tlačítka pro losování -->
+    <div>
+        <h2>Uživatel 1</h2>
+        <button id="drawFighterBtnUser1">Losuj zápasníky pro Uživatel 1</button>
+        <p id="fighters1"></p>
+    </div>
+    <div>
+        <h2>Uživatel 2</h2>
+        <button id="drawFighterBtnUser2">Losuj zápasníky pro Uživatel 2</button>
+        <p id="fighters2"></p>
+    </div>
 
-    <h2>Uživatel 2</h2>
-    <button id="drawFighterBtnUser2">Losovat 8 Zápasníků pro Uživatele 2</button>
-    <div id="fighters2" class="fighters-container"></div>
+    <!-- Tlačítko pro losování zápasů -->
+    <div>
+        <button id="drawMatchupBtn">Losuj zápasy</button>
+        <pre id="matchup"></pre>
+    </div>
 
-    <h2>Zápasy</h2>
-    <button id="drawMatchupBtn">Losovat Zápasy</button>
-    <div id="matchup" class="matchup-container"></div>
+    <!-- Tlačítko pro resetování hry -->
+    <div>
+        <button id="resetGameBtn">Resetovat hru</button>
+    </div>
 
-    <h2>Resetování Hry</h2>
-    <button id="resetGameBtn">Resetovat Hru</button>
-
-    <script type="module" src="script.js"></script>
+    <!-- Script -->
+    <script src="script.js"></script>
 </body>
 </html>

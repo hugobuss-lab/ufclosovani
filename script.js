@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -29,26 +29,6 @@ const allFighters = [
 
 let userRole = "";
 
-// Funkce pro resetování dat při načtení stránky
-async function resetData() {
-    const docRef = doc(db, "game", "user1");
-    const docUser1 = await getDoc(docRef);
-    const docRef2 = doc(db, "game", "user2");
-    const docUser2 = await getDoc(docRef2);
-
-    // Vymazání dat, pokud existují
-    if (docUser1.exists()) {
-        await setDoc(docRef, { fighters: [] });
-    }
-    if (docUser2.exists()) {
-        await setDoc(docRef2, { fighters: [] });
-    }
-
-    // Resetování zápasů
-    const docMatchupsRef = doc(db, "game", "matchups");
-    await setDoc(docMatchupsRef, { matches: [] });
-}
-
 // Přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
@@ -76,7 +56,22 @@ async function drawFighters() {
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
 
-    // Losujeme 8 bojovníků
+    // Pokud už má uživatel nějaké vylosované zápasníky, odstraníme je z dostupné nabídky
+    if (userRole === "user1") {
+        const docUser2 = await getDoc(doc(db, "game", "user2"));
+        if (docUser2.exists()) {
+            const user2Fighters = docUser2.data().fighters;
+            availableFighters = availableFighters.filter(fighter => !user2Fighters.includes(fighter));
+        }
+    } else if (userRole === "user2") {
+        const docUser1 = await getDoc(doc(db, "game", "user1"));
+        if (docUser1.exists()) {
+            const user1Fighters = docUser1.data().fighters;
+            availableFighters = availableFighters.filter(fighter => !user1Fighters.includes(fighter));
+        }
+    }
+
+    // Losujeme 8 unikátních bojovníků pro daného uživatele
     for (let i = 0; i < 8; i++) {
         const randomIndex = Math.floor(Math.random() * availableFighters.length);
         selectedFighters.push(availableFighters[randomIndex]);
@@ -118,37 +113,7 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-// Ujistíme se, že DOM je načtený, než přidáme event listener
-document.addEventListener("DOMContentLoaded", () => {
-    // Resetování dat při načtení stránky
-    resetData();
-
-    // Přidání posluchačů na tlačítka až po načtení stránky
-    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
-    if (drawFighterBtn2) {
-        drawFighterBtn2.addEventListener('click', async () => {
-            userRole = "user2";  // Pro uživatele 2
-            await drawFighters();
-        });
-    }
-
-    const drawFighterBtn = document.getElementById('drawFighterBtn');
-    if (drawFighterBtn) {
-        drawFighterBtn.addEventListener('click', async () => {
-            userRole = "user1";  // Pro uživatele 1
-            await drawFighters();
-        });
-    }
-
-    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
-    if (drawMatchupBtn) {
-        drawMatchupBtn.addEventListener('click', async () => {
-            // Zkontrolujeme, zda oba uživatelé mají vylosované zápasníky
-            const docUser1 = await getDoc(doc(db, "game", "user1"));
-            const docUser2 = await getDoc(doc(db, "game", "user2"));
-            if (docUser1.exists() && docUser2.exists()) {
-                drawMatchups();
-            }
-        });
-    }
-});
+// Přidání posluchačů na tlačítka
+document.getElementById('drawFighterBtn1').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtn2').addEventListener('click', drawFighters);
+document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);

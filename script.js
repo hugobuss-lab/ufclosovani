@@ -98,15 +98,27 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-// Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn').addEventListener('click', async () => {
-    userRole = "user1";  // Pro uživatele 1
-    await drawFighters();
-});
+// Ujistíme se, že DOM je načtený, než přidáme event listener
+document.addEventListener("DOMContentLoaded", () => {
+    // Přidání posluchačů na tlačítka až po načtení stránky
+    const drawFighterBtn2 = document.getElementById('drawFighterBtn2');
+    if (drawFighterBtn2) {
+        drawFighterBtn2.addEventListener('click', async () => {
+            userRole = "user2";  // Pro uživatele 2
+            await drawFighters();
+        });
+    }
 
-document.getElementById('drawFighterBtn2').addEventListener('click', async () => {
-    userRole = "user2";  // Pro uživatele 2
-    await drawFighters();
-});
+    const drawFighterBtn = document.getElementById('drawFighterBtn');
+    if (drawFighterBtn) {
+        drawFighterBtn.addEventListener('click', async () => {
+            userRole = "user1";  // Pro uživatele 1
+            await drawFighters();
+        });
+    }
 
-document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
+    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
+    if (drawMatchupBtn) {
+        drawMatchupBtn.addEventListener('click', drawMatchups);
+    }
+});

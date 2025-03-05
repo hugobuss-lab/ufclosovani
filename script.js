@@ -43,32 +43,40 @@ async function resetAllData() {
     console.log("All previous data has been reset.");
 }
 
-// Přidělení role uživatele (user1 nebo user2)
+// Funkce na přidělení role uživatele (user1 nebo user2)
 async function assignUserRole() {
     const docRef = doc(db, "game", "state");
     const docSnap = await getDoc(docRef);
 
-    // Pokud ještě není žádná role, přiřadíme uživateli první volnou roli
     if (!docSnap.exists()) {
+        // Přiřazení user1 jako první hráč
         await setDoc(docRef, { user1: true });
         userRole = "user1";
+        console.log("User1 role assigned.");
     } else {
         const data = docSnap.data();
         if (!data.user1) {
+            // Přiřazení user1, pokud ještě není
             await setDoc(docRef, { user1: true }, { merge: true });
             userRole = "user1";
+            console.log("User1 role assigned.");
         } else if (!data.user2) {
+            // Přiřazení user2, pokud ještě není
             await setDoc(docRef, { user2: true }, { merge: true });
             userRole = "user2";
+            console.log("User2 role assigned.");
         } else {
             alert("Hra je již obsazena!");
+            console.log("Both users are already assigned.");
         }
     }
 
-    // Pokud má uživatel roli, umožníme mu losovat
+    // Aktivace tlačítka pro daného uživatele
     if (userRole === "user1") {
+        console.log("User1 can draw fighters.");
         document.getElementById('drawFighterBtn1').disabled = false;
     } else if (userRole === "user2") {
+        console.log("User2 can draw fighters.");
         document.getElementById('drawFighterBtn2').disabled = false;
     }
 }

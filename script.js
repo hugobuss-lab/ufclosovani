@@ -73,10 +73,8 @@ async function assignUserRole() {
 
     // Aktivace tlačítka pro daného uživatele
     if (userRole === "user1") {
-        console.log("User1 can draw fighters.");
         document.getElementById('drawFighterBtn1').disabled = false;
     } else if (userRole === "user2") {
-        console.log("User2 can draw fighters.");
         document.getElementById('drawFighterBtn2').disabled = false;
     }
 }

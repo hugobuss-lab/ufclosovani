@@ -3,38 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Losování UFC 4 Zápasníků a Zápasů</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        .fighters-container, .matchup-container {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Automatické Losování Bojovníků</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script defer src="script.js"></script>
 </head>
 <body>
-    <h1>Losování UFC 4 Zápasníků a Zápasů</h1>
+    <h1>Automatické Losování Bojovníků</h1>
 
-    <h2>Uživatel 1</h2>
-    <button id="drawFighterBtn">Losovat 8 Zápasníků</button>
-    <div id="fighters1" class="fighters-container"></div>
+    <div id="user1-info">
+        <h2>Uživatel 1</h2>
+        <p id="fighters1">Zápasníci: Čeká na výběr...</p>
+        <button id="drawFighterBtn1" disabled>Losovat zapasníky pro uživatele 1</button>
+    </div>
 
-    <h2>Uživatel 2</h2>
-    <!-- Přidání tlačítka pro losování zápasníků pro uživatele 2 -->
-    <button id="drawFighterBtn2">Losovat 8 Zápasníků</button>
-    <div id="fighters2" class="fighters-container"></div>
+    <div id="user2-info">
+        <h2>Uživatel 2</h2>
+        <p id="fighters2">Zápasníci: Čeká na výběr...</p>
+        <button id="drawFighterBtn2" disabled>Losovat zapasníky pro uživatele 2</button>
+    </div>
 
-    <h2>Zápasy</h2>
-    <button id="drawMatchupBtn">Losovat Zápasy</button>
-    <div id="matchup" class="matchup-container"></div>
+    <div id="matchups-info">
+        <h2>Zápasy:</h2>
+        <pre id="matchup">Zápasy: Čeká na losování...</pre>
+        <button id="drawMatchupBtn" disabled>Losovat zápasy</button>
+    </div>
 
-    <script type="module" src="script.js"></script>
+    <div id="status">
+        <h3>Stav hry</h3>
+        <p id="game-status">Načítání...</p>
+    </div>
 </body>
 </html>

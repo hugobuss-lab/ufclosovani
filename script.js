@@ -34,7 +34,7 @@ async function resetAllData() {
     const docRef1 = doc(db, "game", "user1");
     const docRef2 = doc(db, "game", "user2");
     const docRef3 = doc(db, "game", "matchups");
-    
+
     // Vymažeme všechna data
     await deleteDoc(docRef1);
     await deleteDoc(docRef2);
@@ -63,6 +63,12 @@ async function assignUserRole() {
         } else {
             alert("Hra je již obsazena!");
         }
+    }
+
+    // Pokud má uživatel roli, umožníme mu losovat
+    if (userRole) {
+        document.getElementById('drawFighterBtn').disabled = false;
+        document.getElementById('drawMatchupBtn').disabled = false;
     }
 }
 

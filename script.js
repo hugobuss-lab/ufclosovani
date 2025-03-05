@@ -1,6 +1,6 @@
 // Import Firebase SDK
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase konfigurace
 const firebaseConfig = {
@@ -74,17 +74,9 @@ async function drawMatchups() {
     const docUser2 = await getDoc(doc(db, "game", "user2"));
 
     if (docUser1.exists() && docUser2.exists()) {
-        const matchups = docUser1.data().fighters.map((fighter, index) => `${fighter} vs. ${docUser2.data().fighters[index]}`);
+        const matchups = docUser1.data().fighters.map((fighter, index) => ${fighter} vs. ${docUser2.data().fighters[index]});
         await setDoc(doc(db, "game", "matchups"), { matches: matchups });
     }
-}
-
-// Funkce pro resetování hry
-async function resetGame() {
-    await deleteDoc(doc(db, "game", "user1"));
-    await deleteDoc(doc(db, "game", "user2"));
-    await deleteDoc(doc(db, "game", "matchups"));
-    await setDoc(doc(db, "game", "state"), { user1: false, user2: false });  // Reset stavu
 }
 
 // Posluchače na aktualizaci dat v reálném čase
@@ -106,15 +98,6 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
     }
 });
 
-onSnapshot(doc(db, "game", "state"), (doc) => {
-    if (doc.exists()) {
-        const data = doc.data();
-        if (data.user1 && data.user2) {
-            alert("Hra je již obsazena!");
-        }
-    }
-});
-
 // Ujistíme se, že DOM je načtený, než přidáme event listener
 document.addEventListener("DOMContentLoaded", () => {
     // Přidání posluchačů na tlačítka až po načtení stránky
@@ -132,4 +115,10 @@ document.addEventListener("DOMContentLoaded", () => {
             userRole = "user1";  // Pro uživatele 1
             await drawFighters();
         });
-   
+    }
+
+    const drawMatchupBtn = document.getElementById('drawMatchupBtn');
+    if (drawMatchupBtn) {
+        drawMatchupBtn.addEventListener('click', drawMatchups);
+    }
+});

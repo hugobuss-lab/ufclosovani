@@ -66,22 +66,19 @@ async function assignUserRole() {
     }
 
     // Pokud má uživatel roli, umožníme mu losovat
-    if (userRole) {
-        document.getElementById('drawFighterBtn').disabled = false;
-        document.getElementById('drawMatchupBtn').disabled = false;
+    if (userRole === "user1") {
+        document.getElementById('drawFighterBtn1').disabled = false;
+    } else if (userRole === "user2") {
+        document.getElementById('drawFighterBtn2').disabled = false;
     }
 }
 
 // Funkce na losování bojovníků
-async function drawFighters() {
-    // Pokud klikneme na "Losovat zápasníky", resetujeme stará data
-    const docRef = doc(db, "game", userRole);
-    await deleteDoc(docRef); // Smažeme staré zápasníky
-
+async function drawFighters(userRole) {
     let selectedFighters = [];
     let availableFighters = [...allFighters]; // Kopie původního seznamu bojovníků
 
-    // Pokud už má uživatel nějaké vylosované zápasníky, odstraníme je z dostupné nabídky
+    // Pokud uživatel má roli user1, vyfiltrujeme již vylosované zápasníky pro user2
     if (userRole === "user1") {
         const docUser2 = await getDoc(doc(db, "game", "user2"));
         if (docUser2.exists()) {
@@ -142,13 +139,9 @@ onSnapshot(doc(db, "game", "matchups"), (doc) => {
 });
 
 // Přidání posluchačů na tlačítka
-document.getElementById('drawFighterBtn').addEventListener('click', drawFighters);
+document.getElementById('drawFighterBtn1').addEventListener('click', () => drawFighters("user1"));
+document.getElementById('drawFighterBtn2').addEventListener('click', () => drawFighters("user2"));
 document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
 
 // Inicializace role pro uživatele
 assignUserRole();
-
-// Resetování dat při načtení stránky
-window.addEventListener('beforeunload', () => {
-    resetAllData();
-});

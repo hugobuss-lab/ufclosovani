@@ -34,9 +34,6 @@
             background-color: #f5f5f5;
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
 
@@ -56,8 +53,27 @@
     <button id="drawMatchupBtn" style="display:none;">Losovat Zápasy</button>
     <div id="matchup" style="display:none;"></div>
 
-    <script>
-        // Seznam bojovníků (můžeš přidat více bojovníků)
+    <script type="module">
+        // Importování Firebase SDK pro Firebase 9+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
+        // Firebase konfigurace (vlož sem svou konfiguraci)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBchdjFEa0njLG5xpXWhPMJqq4O34gysNg", 
+            authDomain: "ufclosovani.firebaseapp.com",
+            projectId: "ufclosovani",
+            storageBucket: "ufclosovani.firebasestorage.app",
+            messagingSenderId: "138751202363",
+            appId: "1:138751202363:web:71fcefa92e79a90c9fb81e",
+            measurementId: "G-Q4MZ39CYVD"
+        };
+
+        // Inicializace Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Seznam bojovníků
         const allFighters = [
             'Omari Akhmedov', 'Michael Bisping', 'Derek Brunson', 'Jared Canonnier', 
             'Khamzat Chimaev', 'Paulo Costa', 'Nick Diaz', 'Dricus Du Plessis', 
@@ -73,21 +89,6 @@
         let user2Fighters = [];
         let remainingFighters = [...allFighters]; // Udržíme seznam pro společné losování
 
-        // Firebase konfigurace
-        const firebaseConfig = {
-            apiKey: "AIzaSyBchdjFEa0njLG5xpXWhPMJqq4O34gysNg",
-            authDomain: "ufclosovani.firebaseapp.com",
-            projectId: "ufclosovani",
-            storageBucket: "ufclosovani.firebasestorage.app",
-            messagingSenderId: "138751202363",
-            appId: "1:138751202363:web:71fcefa92e79a90c9fb81e",
-            measurementId: "G-Q4MZ39CYVD"
-        };
-
-        // Inicializace Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();  // Firestore databáze
-
         // Funkce pro losování 8 zápasníků pro uživatele
         function drawFighters(user) {
             let selectedFighters = [];
@@ -99,39 +100,16 @@
                 remainingFighters.splice(randomIndex, 1); // Odstraníme vybraného bojovníka
             }
 
-            // Uložení zápasníků do Firebase
             if (user === 1) {
                 user1Fighters = selectedFighters;
-                saveFightersToFirebase(1, selectedFighters);
                 document.getElementById('fighters1').innerHTML = selectedFighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');
                 document.getElementById('drawFighterBtn2').style.display = 'inline-block'; // Umožní druhému uživateli losování
             } else {
                 user2Fighters = selectedFighters;
-                saveFightersToFirebase(2, selectedFighters);
                 document.getElementById('fighters2').innerHTML = selectedFighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');
                 document.getElementById('drawMatchupBtn').style.display = 'inline-block'; // Umožní losování zápasů
             }
         }
-
-        // Funkce pro uložení vylosovaných zápasníků do Firebase
-        function saveFightersToFirebase(user, fighters) {
-            const userId = `user${user}`;
-            db.collection('fighters').doc(userId).set({
-                fighters: fighters
-            }).then(() => {
-                console.log(`Zápasníci pro uživatele ${user} byli uloženi.`);
-            }).catch((error) => {
-                console.error("Chyba při ukládání zápasníků: ", error);
-            });
-        }
-
-        // Sledování zápasníků druhého uživatele v reálném čase
-        db.collection('fighters').doc('user2').onSnapshot((doc) => {
-            if (doc.exists) {
-                const fighters = doc.data().fighters;
-                document.getElementById('fighters2').innerHTML = fighters.map(fighter => `<div class="fighter">${fighter}</div>`).join('');
-            }
-        });
 
         // Funkce pro losování zápasů mezi 2 uživateli
         function drawMatchups() {
@@ -144,28 +122,8 @@
             for (let i = 0; i < 8; i++) {
                 matchups.push(`${user1Fighters[i]} vs. ${user2Fighters[i]}`);
             }
-            saveMatchupsToFirebase(matchups);
             document.getElementById('matchup').innerHTML = matchups.map(match => `<div>${match}</div>`).join('');
         }
-
-        // Funkce pro uložení zápasů do Firebase
-        function saveMatchupsToFirebase(matchups) {
-            db.collection('matchups').doc('current').set({
-                matchups: matchups
-            }).then(() => {
-                console.log("Zápasy byly uloženy.");
-            }).catch((error) => {
-                console.error("Chyba při ukládání zápasů: ", error);
-            });
-        }
-
-        // Sledování zápasů v reálném čase
-        db.collection('matchups').doc('current').onSnapshot((doc) => {
-            if (doc.exists) {
-                const matchups = doc.data().matchups;
-                document.getElementById('matchup').innerHTML = matchups.map(match => `<div>${match}</div>`).join('');
-            }
-        });
 
         // Event listeners pro tlačítka
         document.getElementById('drawFighterBtn1').addEventListener('click', function() {

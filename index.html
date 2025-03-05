@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="cs">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,36 +9,34 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-
         button {
             padding: 10px;
             margin: 10px;
             font-size: 16px;
         }
-
-        .fighters-container,
-        .matchup-container {
+        .fighters-container, .matchup-container {
             margin-top: 20px;
         }
     </style>
 </head>
-
 <body>
     <h1>Losování UFC 4 Zápasníků a Zápasů</h1>
 
     <h2>Uživatel 1</h2>
-    <button id="drawFighterBtn1">Losovat 8 Zápasníků</button>
+    <button id="drawFighterBtn">Losovat 8 Zápasníků</button>
     <div id="fighters1" class="fighters-container"></div>
 
     <h2>Uživatel 2</h2>
-    <button id="drawFighterBtn2">Losovat 8 Zápasníků</button>
+    <button id="drawFighterBtn">Losovat 8 Zápasníků</button>
     <div id="fighters2" class="fighters-container"></div>
 
     <h2>Zápasy</h2>
     <button id="drawMatchupBtn">Losovat Zápasy</button>
     <div id="matchup" class="matchup-container"></div>
 
+    <h2>Resetování hry</h2>
+    <button id="resetGameBtn">Resetovat Hru</button>
+
     <script type="module" src="script.js"></script>
 </body>
-
 </html>

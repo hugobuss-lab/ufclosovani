@@ -94,6 +94,11 @@
 
         // Funkce pro losování zápasů mezi 2 uživateli
         function drawMatchups() {
+            if (user1Fighters.length !== 8 || user2Fighters.length !== 8) {
+                alert("Oba uživatelé musí mít 8 zápasníků, než můžete losovat zápasy!");
+                return;
+            }
+
             let matchups = [];
             for (let i = 0; i < 8; i++) {
                 matchups.push(`${user1Fighters[i]} vs. ${user2Fighters[i]}`);

@@ -19,109 +19,54 @@
 
     <style>
         body {
-            background: url('https://www.ufc.com/sites/default/files/styles/hero_image/public/2022-09/UFC_logo_hero.jpg') no-repeat center center fixed;
-            background-size: cover;
-            font-family: 'Oswald', sans-serif;
-            color: white;
-            padding-top: 20px;
+            background-color: #f8f9fa;
+            font-family: 'Oswald', sans-serif; /* Nastavení UFC stylu */
         }
         .container {
-            max-width: 900px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 30px;
-            border-radius: 10px;
-        }
-        h1, h2 {
-            text-align: center;
-            font-weight: bold;
-        }
-        .btn {
-            font-size: 1.1rem;
-            border-radius: 30px;
-            margin: 10px 0;
-        }
-        .btn-primary {
-            background-color: #e60000; /* UFC red */
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #d40000;
-        }
-        .btn-success {
-            background-color: #006400; /* UFC green */
-            border: none;
-        }
-        .btn-success:hover {
-            background-color: #004d00;
-        }
-        .btn-danger {
-            background-color: #ff0000; /* UFC red */
-            border: none;
-        }
-        .btn-danger:hover {
-            background-color: #e60000;
+            max-width: 700px;
         }
         .card {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid #fff;
-            margin: 5px;
+            transition: 0.3s;
             text-align: center;
-            color: white;
         }
         .card:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .row-cols-2 .col {
-            padding: 10px;
-        }
-        .row-cols-2 {
-            justify-content: center;
-        }
-        pre {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            font-size: 1.2rem;
-            border-radius: 10px;
-        }
-        .text-primary, .text-success, .text-warning {
-            font-size: 1.5rem;
         }
     </style>
 </head>
-<body>
+<body class="container mt-4">
 
-    <div class="container">
-        <h1>Losování zápasníků <i class="fa-solid fa-users"></i></h1>
+    <h1 class="text-center fw-bold">
+        Losování zápasníků <i class="fa-solid fa-users"></i>
+    </h1>
 
-        <div class="row justify-content-center my-4">
-            <button id="drawFighterBtn" class="btn btn-primary mx-2 animate__animated animate__pulse">
-                <i class="fa-solid fa-dice"></i> Losuj pro Uživatele 1
-            </button>
-            <button id="drawFighterBtn2" class="btn btn-primary mx-2 animate__animated animate__pulse">
-                <i class="fa-solid fa-dice"></i> Losuj pro Uživatele 2
-            </button>
-            <button id="drawMatchupBtn" class="btn btn-success mx-2">
-                <i class="fa-solid fa-handshake"></i> Vygeneruj zápasy
-            </button>
-        </div>
-
-        <div class="row justify-content-center my-4">
-            <button id="resetGameBtn" class="btn btn-danger">
-                <i class="fa-solid fa-trash"></i> Resetovat hru
-            </button>
-        </div>
-
-        <!-- Výpis zápasníků -->
-        <h2 class="text-primary">Uživatel 1</h2>
-        <div id="fighters1" class="row row-cols-2 g-2"></div>
-
-        <h2 class="text-success mt-4">Uživatel 2</h2>
-        <div id="fighters2" class="row row-cols-2 g-2"></div>
-
-        <h2 class="text-warning mt-4">Vygenerované zápasy</h2>
-        <pre id="matchup" class="p-3 bg-dark text-white rounded"></pre>
+    <div class="row justify-content-center my-4">
+        <button id="drawFighterBtn" class="btn btn-primary mx-2 animate__animated animate__pulse">
+            <i class="fa-solid fa-dice"></i> Losuj pro Uživatele 1
+        </button>
+        <button id="drawFighterBtn2" class="btn btn-primary mx-2 animate__animated animate__pulse">
+            <i class="fa-solid fa-dice"></i> Losuj pro Uživatele 2
+        </button>
+        <button id="drawMatchupBtn" class="btn btn-success mx-2">
+            <i class="fa-solid fa-handshake"></i> Vygeneruj zápasy
+        </button>
     </div>
+
+    <div class="row justify-content-center my-4">
+        <button id="resetGameBtn" class="btn btn-danger">
+            <i class="fa-solid fa-trash"></i> Resetovat hru
+        </button>
+    </div>
+
+    <!-- Výpis zápasníků -->
+    <h2 class="text-primary">Uživatel 1</h2>
+    <div id="fighters1" class="row row-cols-2 g-2"></div>
+
+    <h2 class="text-success mt-4">Uživatel 2</h2>
+    <div id="fighters2" class="row row-cols-2 g-2"></div>
+
+    <h2 class="text-warning mt-4">Vygenerované zápasy</h2>
+    <pre id="matchup" class="p-3 bg-dark text-white rounded"></pre>
 
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
@@ -153,27 +98,28 @@
             'Marvin Vettori', 'Robert Whittaker'
         ];
 
+        let availableFighters = [...allFighters];
         let user1Fighters = [];
         let user2Fighters = [];
 
+        // Funkce pro losování zápasníků pro uživatele
         async function drawFighters(role) {
             let selectedFighters = [];
-            let availableFighters = [...allFighters];
 
             if (role === "user1") {
-                // User 1 can select 8 fighters
+                // Losování pro uživatele 1
                 for (let i = 0; i < 8; i++) {
                     const randomIndex = Math.floor(Math.random() * availableFighters.length);
                     selectedFighters.push(availableFighters[randomIndex]);
-                    availableFighters.splice(randomIndex, 1);  // Remove selected fighter from pool
+                    availableFighters.splice(randomIndex, 1);
                 }
                 user1Fighters = selectedFighters;
-            } else {
-                // User 2 can select only from remaining fighters
+            } else if (role === "user2") {
+                // Losování pro uživatele 2 (nebudou se opakovat zápasníci)
                 for (let i = 0; i < 8; i++) {
                     const randomIndex = Math.floor(Math.random() * availableFighters.length);
                     selectedFighters.push(availableFighters[randomIndex]);
-                    availableFighters.splice(randomIndex, 1);  // Remove selected fighter from pool
+                    availableFighters.splice(randomIndex, 1);
                 }
                 user2Fighters = selectedFighters;
             }
@@ -181,6 +127,7 @@
             await setDoc(doc(db, "game", role), { fighters: selectedFighters });
         }
 
+        // Funkce pro generování zápasů
         async function drawMatchups() {
             if (user1Fighters.length === 8 && user2Fighters.length === 8) {
                 const matchups = user1Fighters.map((fighter, index) => `${fighter} vs. ${user2Fighters[index]}`);
@@ -188,14 +135,18 @@
             }
         }
 
+        // Funkce pro resetování hry
         async function resetGame() {
+            availableFighters = [...allFighters];
+            user1Fighters = [];
+            user2Fighters = [];
             await deleteDoc(doc(db, "game", "user1"));
             await deleteDoc(doc(db, "game", "user2"));
             await deleteDoc(doc(db, "game", "matchups"));
-            await deleteDoc(doc(db, "game", "state"));
             location.reload();
         }
 
+        // Sledování změn v databázi a aktualizace na stránce
         onSnapshot(doc(db, "game", "user1"), (doc) => {
             if (doc.exists()) {
                 document.getElementById('fighters1').innerHTML = doc.data().fighters.map(fighter =>
@@ -218,6 +169,7 @@
             }
         });
 
+        // Event Listeners pro tlačítka
         document.getElementById('drawFighterBtn').addEventListener('click', () => drawFighters("user1"));
         document.getElementById('drawFighterBtn2').addEventListener('click', () => drawFighters("user2"));
         document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);

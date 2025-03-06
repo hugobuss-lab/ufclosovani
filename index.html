@@ -19,18 +19,56 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #121212; /* Tmavé pozadí */
+            color: #e0e0e0; /* Světlejší text pro lepší kontrast */
             font-family: 'Oswald', sans-serif; /* Nastavení UFC stylu */
         }
         .container {
-            max-width: 700px;
+            max-width: 800px;
         }
         .card {
+            background-color: #1f1f1f; /* Tmavší karty pro UFC styl */
+            color: #fff;
             transition: 0.3s;
             text-align: center;
+            border: 1px solid #333;
         }
         .card:hover {
             transform: scale(1.05);
+            background-color: #333; /* Mírné ztmavnutí karty při najetí */
+        }
+        .btn {
+            font-weight: bold;
+            border-radius: 10px;
+        }
+        .btn-primary {
+            background-color: #d32f2f;
+            border: none;
+        }
+        .btn-success {
+            background-color: #388e3c;
+            border: none;
+        }
+        .btn-danger {
+            background-color: #d32f2f;
+            border: none;
+        }
+        .btn:hover {
+            filter: brightness(1.2);
+        }
+        .text-primary, .text-success, .text-warning {
+            color: #fbc02d; /* Zlatá barva pro názvy */
+        }
+        h1, h2 {
+            font-weight: 700;
+        }
+        pre {
+            background-color: #333;
+            color: #fbc02d;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1rem;
+            border: 1px solid #444;
         }
     </style>
 </head>
@@ -66,7 +104,7 @@
     <div id="fighters2" class="row row-cols-2 g-2"></div>
 
     <h2 class="text-warning mt-4">Vygenerované zápasy</h2>
-    <pre id="matchup" class="p-3 bg-dark text-white rounded"></pre>
+    <pre id="matchup" class="p-3"></pre>
 
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
@@ -98,55 +136,39 @@
             'Marvin Vettori', 'Robert Whittaker'
         ];
 
-        let availableFighters = [...allFighters];
-        let user1Fighters = [];
-        let user2Fighters = [];
+        let userRole = "";
 
-        // Funkce pro losování zápasníků pro uživatele
         async function drawFighters(role) {
             let selectedFighters = [];
+            let availableFighters = [...allFighters];
 
-            if (role === "user1") {
-                // Losování pro uživatele 1
-                for (let i = 0; i < 8; i++) {
-                    const randomIndex = Math.floor(Math.random() * availableFighters.length);
-                    selectedFighters.push(availableFighters[randomIndex]);
-                    availableFighters.splice(randomIndex, 1);
-                }
-                user1Fighters = selectedFighters;
-            } else if (role === "user2") {
-                // Losování pro uživatele 2 (nebudou se opakovat zápasníci)
-                for (let i = 0; i < 8; i++) {
-                    const randomIndex = Math.floor(Math.random() * availableFighters.length);
-                    selectedFighters.push(availableFighters[randomIndex]);
-                    availableFighters.splice(randomIndex, 1);
-                }
-                user2Fighters = selectedFighters;
+            for (let i = 0; i < 8; i++) {
+                const randomIndex = Math.floor(Math.random() * availableFighters.length);
+                selectedFighters.push(availableFighters[randomIndex]);
+                availableFighters.splice(randomIndex, 1);
             }
 
             await setDoc(doc(db, "game", role), { fighters: selectedFighters });
         }
 
-        // Funkce pro generování zápasů
         async function drawMatchups() {
-            if (user1Fighters.length === 8 && user2Fighters.length === 8) {
-                const matchups = user1Fighters.map((fighter, index) => `${fighter} vs. ${user2Fighters[index]}`);
+            const docUser1 = await getDoc(doc(db, "game", "user1"));
+            const docUser2 = await getDoc(doc(db, "game", "user2"));
+
+            if (docUser1.exists() && docUser2.exists()) {
+                const matchups = docUser1.data().fighters.map((fighter, index) => `${fighter} vs. ${docUser2.data().fighters[index]}`);
                 await setDoc(doc(db, "game", "matchups"), { matches: matchups });
             }
         }
 
-        // Funkce pro resetování hry
         async function resetGame() {
-            availableFighters = [...allFighters];
-            user1Fighters = [];
-            user2Fighters = [];
             await deleteDoc(doc(db, "game", "user1"));
             await deleteDoc(doc(db, "game", "user2"));
             await deleteDoc(doc(db, "game", "matchups"));
+            await deleteDoc(doc(db, "game", "state"));
             location.reload();
         }
 
-        // Sledování změn v databázi a aktualizace na stránce
         onSnapshot(doc(db, "game", "user1"), (doc) => {
             if (doc.exists()) {
                 document.getElementById('fighters1').innerHTML = doc.data().fighters.map(fighter =>
@@ -169,7 +191,6 @@
             }
         });
 
-        // Event Listeners pro tlačítka
         document.getElementById('drawFighterBtn').addEventListener('click', () => drawFighters("user1"));
         document.getElementById('drawFighterBtn2').addEventListener('click', () => drawFighters("user2"));
         document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);

@@ -109,20 +109,14 @@
             'Marvin Vettori', 'Robert Whittaker'
         ];
 
-        async function drawFighters(role) {
+        async function drawFighters(role, selected) {
             let selectedFighters = [];
-            let availableFighters = [...allFighters];
-            let alreadySelected = [];
+            let availableFighters = allFighters.filter(fighter => !selected.includes(fighter));
 
-            // Ensure no overlap by tracking already selected fighters
-            while (selectedFighters.length < 8) {
+            while (selectedFighters.length < 8 && availableFighters.length > 0) {
                 const randomIndex = Math.floor(Math.random() * availableFighters.length);
-                const fighter = availableFighters[randomIndex];
-                if (!alreadySelected.includes(fighter)) {
-                    selectedFighters.push(fighter);
-                    alreadySelected.push(fighter); // Track the fighter to avoid re-selection
-                }
-                availableFighters.splice(randomIndex, 1); // Remove the selected fighter from the list
+                const fighter = availableFighters.splice(randomIndex, 1)[0];
+                selectedFighters.push(fighter);
             }
 
             await setDoc(doc(db, "game", role), { fighters: selectedFighters });
@@ -168,8 +162,14 @@
             }
         });
 
-        document.getElementById('drawFighterBtn').addEventListener('click', () => drawFighters("user1"));
-        document.getElementById('drawFighterBtn2').addEventListener('click', () => drawFighters("user2"));
+        document.getElementById('drawFighterBtn').addEventListener('click', async () => {
+            const selected1 = (await getDoc(doc(db, "game", "user2"))).data()?.fighters || [];
+            await drawFighters("user1", selected1);
+        });
+        document.getElementById('drawFighterBtn2').addEventListener('click', async () => {
+            const selected2 = (await getDoc(doc(db, "game", "user1"))).data()?.fighters || [];
+            await drawFighters("user2", selected2);
+        });
         document.getElementById('drawMatchupBtn').addEventListener('click', drawMatchups);
         document.getElementById('resetGameBtn').addEventListener('click', resetGame);
     </script>
